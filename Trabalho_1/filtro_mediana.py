@@ -42,7 +42,7 @@ if __name__ == "__main__":
     img = Image.open(in_file("Woman.jpg"))
     
     inicio = timeit.default_timer()
-    imagem_filto = filtro_media(img)
+    imagem_filto = filtro_mediana(img)
     fim = timeit.default_timer()
 
     print("Tempo de execução: {}".format(fim - inicio))
