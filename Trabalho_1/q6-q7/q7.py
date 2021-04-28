@@ -1,11 +1,4 @@
-from scipy import signal, misc, fft
-import scipy
-import matplotlib.pyplot as plt
-from matplotlib import image
-import matplotlib.patches as patches
 from PIL import Image, ImageFilter
-import numpy as np
-import cv2 as cv
 
 def correlacaoYIQ(imagem, filtro, dimensao_filtro, tupla_pixel):
     w, h = imagem.size
@@ -20,20 +13,18 @@ def correlacaoYIQ(imagem, filtro, dimensao_filtro, tupla_pixel):
     for m in range(linha-var_linha, linha+var_linha+1):
         j = 0
         for n in range(coluna-var_coluna, coluna+var_coluna+1):
-            if m >= 0 and m < w and n >= 0 and n < h:
+            if m >= 0 and m < w and n >= 0 and n < h and i<dimensao_filtro[0] and j<dimensao_filtro[1]:
                 pxl = imagem.getpixel((m,n))
+                pxl_filtro = filtro.getpixel((i, j))
 
-                x = np.array(pxl)
-                y = np.array(filtro.getpixel((i, j)))
-
-                soma += x.dot(y)
+                soma += pxl * pxl_filtro
             j+=1
         i+=1
     
     return soma
 
-face = Image.open('Woman.jpg')
-eye =  Image.open('Woman_eye.jpg')
+face = Image.open('input/Woman.jpg').convert('L')
+eye =  Image.open('input/Woman_eye.jpg').convert('L')
 # print(eye.dtype)
 # print(eye.shape)
 # print(type(eye_arr))
