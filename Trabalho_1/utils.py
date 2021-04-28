@@ -38,3 +38,25 @@ def correlacao(imagem, filtro, dimensao_filtro, tupla_pixel):
     
     return (soma_r, soma_g, soma_b)
                 
+
+def correlacaoYIQ(imagem, filtro, dimensao_filtro, tupla_pixel):
+    w, h = imagem.size
+
+    linha = tupla_pixel[0]
+    coluna = tupla_pixel[1]
+    var_linha = int(dimensao_filtro[0]/2) # variante da linha do inicio ao fim
+    var_coluna = int(dimensao_filtro[1]/2) # variante da coluna do inicio ao fim
+    
+    soma = 0
+    i = j = 0
+    for m in range(linha-var_linha, linha+var_linha+1):
+        j = 0
+        for n in range(coluna-var_coluna, coluna+var_coluna+1):
+            if m >= 0 and m < w and n >= 0 and n < h:
+                pxl = imagem.getpixel((m,n))
+
+                soma += pxl * filtro.getpixel((i, j))
+            j+=1
+        i+=1
+    
+    return soma
