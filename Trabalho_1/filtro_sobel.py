@@ -54,13 +54,13 @@ def filtro_sobel(imagem):
 
 
 if __name__ == "__main__":
-    imagem_original = Image.open(in_file("Woman.jpg"))
-    imagem_original = filtro_media(imagem_original)
+    imagem_original = Image.open(in_file("Eliseu.jpeg"))
+    imagem_original = filtro_media(imagem_original, (3, 3))
 
     inicio = timeit.default_timer()
     imagem_filtro = filtro_sobel(imagem_original)
     fim = timeit.default_timer()
 
     print("Tempo de execução: {}".format(fim - inicio))
-    imagem_filtro.save(out_file("WomanWithSobelFilterFinal.png"))
+    imagem_filtro.save(out_file("Eliseu.png"))
 

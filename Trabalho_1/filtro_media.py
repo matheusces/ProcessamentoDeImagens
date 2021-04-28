@@ -1,11 +1,15 @@
 from PIL import Image
+import random
 import timeit
 from utils import in_file, out_file, correlacao
 
 # Aplicando filtro média 3x5
-def filtro_media(imagem, filtro, dimensao_filtro):
+def filtro_media(imagem, dimensao_filtro):
     w, h = imagem.size
     nova_img = Image.new("RGB", (w, h))
+
+    dimensao_total = dimensao_filtro[0]*dimensao_filtro[1]
+    filtro = [1/dimensao_total for _ in range(dimensao_total)]
 
     for linha in range(w):
         for coluna in range(h):
@@ -32,15 +36,9 @@ def filtro_media(imagem, filtro, dimensao_filtro):
 
 if __name__ == "__main__":
     img = Image.open(in_file("Woman.jpg"))
-
-    FILTRO_MEDIA = [
-                1/15, 1/15, 1/15, 1/15, 1/15,
-                1/15, 1/15, 1/15, 1/15, 1/15,
-                1/15, 1/15, 1/15, 1/15, 1/15
-            ]
     
     inicio = timeit.default_timer()
-    imagem_filto = filtro_media(img, FILTRO_MEDIA, (3, 5))
+    imagem_filto = filtro_media(img, (3, 5))
     fim = timeit.default_timer()
 
     print("Tempo de execução: {}".format(fim - inicio))
