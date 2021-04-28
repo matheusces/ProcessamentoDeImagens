@@ -20,7 +20,6 @@ def negativoY(img):
     for line_index, linha in enumerate(np_img):
         for col_index, coluna in enumerate(linha):
             np_img[line_index][col_index][0] = 255.0 - (np_img[line_index][col_index][0])
-            break
     return yiq_to_rgb(np_img)
 
 
