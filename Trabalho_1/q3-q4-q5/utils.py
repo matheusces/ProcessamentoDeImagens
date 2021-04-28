@@ -1,7 +1,7 @@
 import os;
 
-INPUT_DIR = "Trabalho_1/input"
-OUTPUT_DIR = "Trabalho_1/output"
+INPUT_DIR = "q3-q4-q5/input"
+OUTPUT_DIR = "q3-q4-q5/output"
 
 def in_file(filename):
     return os.path.join(INPUT_DIR, filename)
