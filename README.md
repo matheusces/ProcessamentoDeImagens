@@ -1,8 +1,7 @@
 # ProcessamentoDeImagens
 
 ## Trabalho 1 de PDI
-<br /> <br />
-
+<br />
 ## Trabalho 2 de PDI
 
 <br /> <br />
