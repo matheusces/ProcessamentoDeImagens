@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     YSOBEL = [-1, -2, -1,
                 0, 0, 0,
-                1, 2, 1]
+                1, 2, 1]\
 
     imagem_original = Image.open(in_file("Woman.jpg"))
     imagem_original = filtro_media(imagem_original)
