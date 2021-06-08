@@ -18,7 +18,7 @@ print(f"Tamanho do arquivo aberto com librosa {len(data)}")
 
 plt.figure(figsize=(10, 6))
 plt.xlabel("Time [s]")
-plt.ylabel("Amplitude [Hz]")
+plt.ylabel("Amplitude")
 
 ld.waveplot(data, sr=fs)
 plt.show()
