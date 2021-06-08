@@ -8,7 +8,7 @@ from scipy import fft
 import librosa.display as ld
 from utils import dct
 
-path_name = os.getcwd() + '/audio2.wav'
+path_name = os.getcwd() + '/sax.wav'
 # path_name = os.getcwd() + '/MaisUmaSemana.wav'
 
 plt.rcParams.update({'font.size': 16})
@@ -40,6 +40,7 @@ temp_fim = timeit.default_timer()
 dc = data[0]
 print(f"O NÍVEL DC DE ACORDO COM A MINHA FUNÇÃO É {dc}")
 print(f"Tempo de execução da dct é {temp_fim-temp_ini}")
+data[0] = 0
 data = numpy.array(data)
 data = numpy.abs(data)
 plt.figure(figsize=(10, 6))
@@ -48,6 +49,6 @@ plt.ylabel("Amplitude [Hz]")
 ld.waveplot(data, sr=fs)
 plt.show()
 
-wavfile.write(filename="audio2_dct.wav", rate=fs, data=data)
+wavfile.write(filename="sax_dct.wav", rate=fs, data=data)
 # wavfile.write(filename="MUS1_dct.wav", rate=fs, data=data)
 
