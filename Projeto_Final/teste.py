@@ -1,7 +1,11 @@
 import os
 from PIL import Image
 from IPython import display
+from textblob.en import subjectivity
 from wordcloud import WordCloud
+import spacy
+from spacytextblob.spacytextblob import SpacyTextBlob
+from textblob import TextBlob
 import matplotlib.pyplot as plt
 import pytesseract
 
@@ -60,11 +64,111 @@ def generate_wordcloud(words_dict, output_filename):
   plt.savefig(output_filename)
   plt.close()
 
+def obter_dados_das_fontes():
+    diretorio_base = os.getcwd()
+
+    with open(diretorio_base + "training/imdb_labelled.txt", "r") as arquivo_texto:
+        dados = arquivo_texto.read().split('\n')
+         
+    with open(diretorio_base + "training/amazon_cells_labelled.txt", "r") as arquivo_texto:
+        dados += arquivo_texto.read().split('\n')
+
+    with open(diretorio_base + "training/yelp_labelled.txt", "r") as arquivo_texto:
+        dados += arquivo_texto.read().split('\n')
+
+    return dados
+
+def update_dict(dicionario, frase, doc):
+  for entidade in doc.ents:
+        if entidade.text in dicionario:
+          # Atualizando média da polaridade e outros campos 
+
+          newPolarity = dicionario[entidade.text][0] + frase.polarity
+          newSubjectivity = dicionario[entidade.text][1] + frase.subjectivity
+          newQtd = dicionario[entidade.text][2] + 1
+          
+          dicionario[entidade.text] = [
+            newPolarity,
+            newSubjectivity,
+            newQtd,
+            newPolarity / newQtd
+          ]
+
+        else:
+          dicionario[entidade.text] = [
+            frase.polarity,
+            frase.subjectivity,
+            1,
+            frase.polarity
+          ]
+
+  return dicionario
+
+def detect_sentiment(list_sentences):
+  # en_core_web_sm
+  # pt_core_news_sm
+  # nlp = spacy.load("pt_core_news_sm")
+  # nlp.add_pipe('spacytextblob')
+  # documento = nlp("This man is bad man!")	
+
+  # print(documento.text)
+  # for token in documento:
+  #   print(token.text, token.pos_, token.dep_)
+
+  # print('\n')
+  # documento = nlp('Bill Gates nasceu em Seattle em 28/10/1955 e foi criador da Microsoft')
+  # for entidade in documento.ents:
+  #   print(entidade.text, entidade.label_)
+  
+  # documento = nlp("Este homem é realmente mau!")	
+  # print(
+  #   documento._.polarity,
+  #   documento._.subjectivity,
+  #   documento._.assessments
+  # )
+  nlp = spacy.load("pt_core_news_sm")
+
+  dicionario = {}
+  # sentiments = []
+  for sentence in list_sentences:
+    frase = TextBlob(sentence)
+    doc = nlp(sentence)
+
+    try: 
+      frase_en = TextBlob(str(frase.translate(to='en')))
+      dicionario = update_dict(dicionario, frase_en, doc)
+    except:
+      dicionario = update_dict(dicionario, frase, doc)
+
+    print(dicionario)
+      
+
+  return dicionario
+
+  # print(frase_en.tags)
+  # print("Polaridade: ", frase_en.polarity) # -1 < p < 1
+  # print("Subjetividade: ", frase_en.subjectivity) # 0 < p < 1
+  # print('\n', frase_en.sentiment_assessments)
+
+
+
 
 path_image = os.getcwd() + '/prints/globo'
 
-print(extract_sentences(path_image))
+globo_sentences = extract_sentences(path_image)
 
-result = extract_words(path_image)
+# #result = extract_words(path_image)
 
-generate_wordcloud(result, 'globo.png')
+# #generate_wordcloud(result, 'globo.png')
+
+sentiments = detect_sentiment(globo_sentences)
+print(sentiments)
+
+# text = TextBlob("Que dia tão ruim de bom")
+# text = text.translate(to="en")
+# print(text)
+# nlp = spacy.load("pt_core_news_sm")
+# doc = nlp('Que dia tão ruim de bom')
+# for ent in doc.ents:
+#   print(ent.text)
+# print(text.sentiment_assessments)
