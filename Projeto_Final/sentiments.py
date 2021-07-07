@@ -1,13 +1,15 @@
 import os
 from PIL import Image
 from IPython import display
+import spacy
 from textblob.en import subjectivity
 from wordcloud import WordCloud
-import spacy
 from spacytextblob.spacytextblob import SpacyTextBlob
 from textblob import TextBlob
 import matplotlib.pyplot as plt
 import pytesseract
+import pandas as pd
+
 
 def extract_sentences(filename):
   list_break_line = []
@@ -64,20 +66,6 @@ def generate_wordcloud(words_dict, output_filename):
   plt.savefig(output_filename)
   plt.close()
 
-def obter_dados_das_fontes():
-    diretorio_base = os.getcwd()
-
-    with open(diretorio_base + "training/imdb_labelled.txt", "r") as arquivo_texto:
-        dados = arquivo_texto.read().split('\n')
-         
-    with open(diretorio_base + "training/amazon_cells_labelled.txt", "r") as arquivo_texto:
-        dados += arquivo_texto.read().split('\n')
-
-    with open(diretorio_base + "training/yelp_labelled.txt", "r") as arquivo_texto:
-        dados += arquivo_texto.read().split('\n')
-
-    return dados
-
 def update_dict(dicionario, frase, doc):
   for entidade in doc.ents:
         if entidade.text in dicionario:
@@ -86,7 +74,7 @@ def update_dict(dicionario, frase, doc):
           newPolarity = dicionario[entidade.text][0] + frase.polarity
           newSubjectivity = dicionario[entidade.text][1] + frase.subjectivity
           newQtd = dicionario[entidade.text][2] + 1
-          
+
           dicionario[entidade.text] = [
             newPolarity,
             newSubjectivity,
@@ -111,21 +99,6 @@ def detect_sentiment(list_sentences):
   # nlp.add_pipe('spacytextblob')
   # documento = nlp("This man is bad man!")	
 
-  # print(documento.text)
-  # for token in documento:
-  #   print(token.text, token.pos_, token.dep_)
-
-  # print('\n')
-  # documento = nlp('Bill Gates nasceu em Seattle em 28/10/1955 e foi criador da Microsoft')
-  # for entidade in documento.ents:
-  #   print(entidade.text, entidade.label_)
-  
-  # documento = nlp("Este homem é realmente mau!")	
-  # print(
-  #   documento._.polarity,
-  #   documento._.subjectivity,
-  #   documento._.assessments
-  # )
   nlp = spacy.load("pt_core_news_sm")
 
   dicionario = {}
@@ -139,36 +112,66 @@ def detect_sentiment(list_sentences):
       dicionario = update_dict(dicionario, frase_en, doc)
     except:
       dicionario = update_dict(dicionario, frase, doc)
-
-    print(dicionario)
       
 
   return dicionario
 
-  # print(frase_en.tags)
-  # print("Polaridade: ", frase_en.polarity) # -1 < p < 1
-  # print("Subjetividade: ", frase_en.subjectivity) # 0 < p < 1
-  # print('\n', frase_en.sentiment_assessments)
 
 
+path_image_globo = os.getcwd() + '/prints/globo'
+path_image_ig = os.getcwd() + '/prints/ig'
+path_image_r7 = os.getcwd() + '/prints/r7_'
+path_image_terra = os.getcwd() + '/prints/terra_'
+path_image_uol = os.getcwd() + '/prints/uol'
 
+globo_sentences = extract_sentences(path_image_globo)
+ig_sentences = extract_sentences(path_image_ig)
+r7_sentences = extract_sentences(path_image_r7)
+terra_sentences = extract_sentences(path_image_terra)
+uol_sentences = extract_sentences(path_image_uol)
 
-path_image = os.getcwd() + '/prints/globo'
+result = extract_words(path_image_globo)
+generate_wordcloud(result, 'globo.png')
 
-globo_sentences = extract_sentences(path_image)
+result = extract_words(path_image_ig)
+generate_wordcloud(result, 'ig.png')
 
-# #result = extract_words(path_image)
+result = extract_words(path_image_r7)
+generate_wordcloud(result, 'r7.png')
 
-# #generate_wordcloud(result, 'globo.png')
+result = extract_words(path_image_terra)
+generate_wordcloud(result, 'terra.png')
 
-sentiments = detect_sentiment(globo_sentences)
-print(sentiments)
+result = extract_words(path_image_uol)
+generate_wordcloud(result, 'uol.png')
 
-# text = TextBlob("Que dia tão ruim de bom")
-# text = text.translate(to="en")
-# print(text)
-# nlp = spacy.load("pt_core_news_sm")
-# doc = nlp('Que dia tão ruim de bom')
-# for ent in doc.ents:
-#   print(ent.text)
-# print(text.sentiment_assessments)
+sentiments_globo = detect_sentiment(globo_sentences)
+sentiments_ig = detect_sentiment(ig_sentences)
+sentiments_r7 = detect_sentiment(r7_sentences)
+sentiments_terra = detect_sentiment(terra_sentences)
+sentiments_uol = detect_sentiment(uol_sentences)
+
+df = pd.DataFrame(sentiments_globo)
+df = df.transpose()
+new_df = df.sort_values(by=2)
+new_df.tail(25).to_csv("globo_comentarios.csv")
+
+df = pd.DataFrame(sentiments_ig)
+df = df.transpose()
+new_df = df.sort_values(by=2)
+new_df.tail(25).to_csv("ig_comentarios.csv")
+
+df = pd.DataFrame(sentiments_r7)
+df = df.transpose()
+new_df = df.sort_values(by=2)
+new_df.tail(25).to_csv("r7_comentarios.csv")
+
+df = pd.DataFrame(sentiments_terra)
+df = df.transpose()
+new_df = df.sort_values(by=2)
+new_df.tail(25).to_csv("terra_comentarios.csv")
+
+df = pd.DataFrame(sentiments_uol)
+df = df.transpose()
+new_df = df.sort_values(by=2)
+new_df.tail(25).to_csv("uol_comentarios.csv")
